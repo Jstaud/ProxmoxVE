@@ -14,12 +14,8 @@ network_check
 update_os
 
 msg_info "Installing Dependencies"
-$STD apt-get install -y curl sudo mc
+$STD apt-get install -y git curl sudo mc docker.io nodejs npm
 msg_ok "Installed Dependencies"
-
-msg_info "Installing Docker"
-$STD apt-get install -y docker.io
-msg_ok "Docker installed successfully"
 
 msg_info "Cloning ente.cc repository"
 $STD git clone https://github.com/ente-io/ente /opt/ente
@@ -29,8 +25,7 @@ msg_info "Starting ente.cc server with Docker Compose"
 $STD docker compose -f /opt/ente/server/docker-compose.yml up --build -d
 msg_ok "ente.cc server started successfully"
 
-msg_info "Installing npm and yarn"
-$STD apt-get install -y nodejs npm
+msg_info "Installing yarn"
 $STD npm install -g yarn
 msg_ok "npm and yarn installed successfully"
 
