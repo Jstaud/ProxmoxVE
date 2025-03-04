@@ -1,6 +1,6 @@
 {
-  "name": "ente.cc",
-  "slug": "ente",
+  "name": "Ente",
+  "slug": "Ente",
   "categories": [
     2, 3
   ],
@@ -16,7 +16,7 @@
   "install_methods": [
     {
       "type": "default",
-      "script": "install/ente-install.sh",
+      "script": "ct/ente.sh",
       "resources": {
           "cpu": 2,
           "ram": 2048,
