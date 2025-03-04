@@ -25,32 +25,32 @@ function update_script() {
     check_container_resources
 
     msg_info "Updating ${APP} LXC"
-    pct exec $CTID -- apt-get update
-    pct exec $CTID -- apt-get -y upgrade
+    $STD apt-get update
+    $STD apt-get -y upgrade
 
     msg_info "Installing Docker"
-    pct exec $CTID -- apt-get install -y docker.io
+    $STD apt-get install -y docker.io
     msg_ok "Docker installed successfully"
 
     msg_info "Cloning ${APP} repository"
-    pct exec $CTID -- git clone https://github.com/ente-io/ente /opt/ente
-    pct exec $CTID -- cd /opt/ente/server
+    git clone https://github.com/ente-io/ente /opt/ente
+    cd /opt/ente/server
     msg_ok "Repository cloned successfully"
 
     msg_info "Starting ${APP} server with Docker Compose"
-    pct exec $CTID -- docker compose up --build -d
+    $STD docker compose up --build -d
     msg_ok "${APP} server started successfully"
 
     msg_info "Installing npm and yarn"
-    pct exec $CTID -- apt-get install -y nodejs npm
-    pct exec $CTID -- npm install -g yarn
+    $STD apt-get install -y nodejs npm
+    $STD npm install -g yarn
     msg_ok "npm and yarn installed successfully"
 
     msg_info "Setting up ${APP} web client"
-    pct exec $CTID -- cd /opt/ente/web
-    pct exec $CTID -- git submodule update --init --recursive
-    pct exec $CTID -- yarn install
-    pct exec $CTID -- NEXT_PUBLIC_ENTE_ENDPOINT=http://localhost:8080 yarn build
+    cd /opt/ente/web
+    git submodule update --init --recursive
+    $STD yarn install
+    NEXT_PUBLIC_ENTE_ENDPOINT=http://localhost:8080 $STD yarn build
     msg_ok "${APP} web client set up successfully"
 
     if [[ ! -d /opt/ente ]]; then
@@ -71,4 +71,4 @@ IP=$(pct exec $CTID -- ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}
 msg_ok "Completed Successfully!\n"
 echo -e "${CREATING}${GN}${APP} setup has been successfully initialized!${CL}"
 echo -e "${INFO}${YW} Access it using the following URL:${CL}"
-echo -e "${TAB}${GATEWAY}${BGN}http://${IP}:8080${CL}"
+echo -e "${TAB}${GATEWAY}${BGN}http://${IP}${CL}"
