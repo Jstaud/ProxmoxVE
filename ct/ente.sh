@@ -9,7 +9,7 @@
 source <(curl -s https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
 
 # Default Values
-APP="ente.cc"
+APP="Ente"
 var_tags="cloud;storage"
 var_cpu="2"
 var_ram="2048"
