@@ -28,26 +28,17 @@ function update_script() {
     pct exec $CTID -- apt-get update
     pct exec $CTID -- apt-get -y upgrade
 
-    msg_info "Installing Docker"
-    pct exec $CTID -- apt-get install -y docker.io
-    msg_ok "Docker installed successfully"
+    msg_info "Pulling latest changes from ${APP} repository"
+    pct exec $CTID -- bash -c "cd /opt/ente && git pull"
+    msg_ok "Repository updated successfully"
 
-    msg_info "Cloning ${APP} repository"
-    pct exec $CTID -- git clone https://github.com/ente-io/ente /opt/ente
-    msg_ok "Repository cloned successfully"
-
-    msg_info "Starting ${APP} server with Docker Compose"
+    msg_info "Rebuilding ${APP} server with Docker Compose"
     pct exec $CTID -- docker compose -f /opt/ente/server/docker-compose.yml up --build -d
-    msg_ok "${APP} server started successfully"
+    msg_ok "${APP} server rebuilt successfully"
 
-    msg_info "Installing npm and yarn"
-    pct exec $CTID -- apt-get install -y nodejs npm
-    pct exec $CTID -- npm install -g yarn
-    msg_ok "npm and yarn installed successfully"
-
-    msg_info "Setting up ${APP} web client"
+    msg_info "Updating ${APP} web client"
     pct exec $CTID -- bash -c "cd /opt/ente/web && git submodule update --init --recursive && yarn install && NEXT_PUBLIC_ENTE_ENDPOINT=http://localhost:8080 yarn build"
-    msg_ok "${APP} web client set up successfully"
+    msg_ok "${APP} web client updated successfully"
 
     if ! pct exec $CTID -- test -d /opt/ente; then
       msg_error "No ${APP} Installation Found!"

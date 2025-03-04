@@ -1,0 +1,39 @@
+{
+  "name": "ente.cc",
+  "slug": "ente",
+  "categories": [
+    2, 3
+  ],
+  "date_created": "2025-03-04",
+  "type": "lxc",
+  "updateable": true,
+  "privileged": false,
+  "interface_port": 8080,
+  "documentation": "https://ente.cc/docs",
+  "website": "https://ente.cc/",
+  "logo": "https://ente.cc/logo.png",
+  "description": "ente.cc is a secure cloud storage service.",
+  "install_methods": [
+    {
+      "type": "default",
+      "script": "install/ente-install.sh",
+      "resources": {
+          "cpu": 2,
+          "ram": 2048,
+          "hdd": 10,
+          "os": "debian",
+          "version": "12"
+      }
+    }
+  ],
+  "default_credentials": {
+      "username": "admin",
+      "password": "admin"
+  },
+  "notes": [
+    {
+        "text": "After the script completes, access the application using the provided URL.",
+        "type": "info"
+    }
+  ]
+}
