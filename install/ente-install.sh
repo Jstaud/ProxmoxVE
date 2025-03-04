@@ -14,17 +14,25 @@ setting_up_container
 network_check
 update_os
 
-# Installing Dependencies
-msg_info "Installing Dependencies"
-$STD apt-get install -y \
+# Ensure CTID is set
+if [[ -z "$CTID" ]]; then
+  msg_error "Container ID (CTID) is not set!"
+  exit 1
+fi
+
+# Installing Dependencies inside the LXC Container
+msg_info "Installing Dependencies inside LXC Container"
+pct exec $CTID -- apt-get update
+pct exec $CTID -- apt-get install -y \
   curl \
   sudo \
   mc \
   git \
   docker.io \
+  docker-compose \
   nodejs \
   npm
-msg_ok "Installed Dependencies"
+msg_ok "Installed Dependencies inside LXC"
 
 # Fetch latest release
 msg_info "Fetching latest release of Ente"
@@ -32,66 +40,39 @@ REPO="ente-io/ente"
 RELEASE=$(curl -s https://api.github.com/repos/$REPO/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
 msg_ok "Latest release: v${RELEASE}"
 
-# Clone repository and set up
-msg_info "Cloning Ente repository"
-if [ ! -d "/opt/ente" ]; then
-    $STD git clone https://github.com/$REPO.git /opt/ente
-else
-    msg_info "Repository already exists, pulling latest changes"
-    $STD git -C /opt/ente pull
-fi
+# Clone repository inside the container
+msg_info "Cloning Ente repository inside LXC"
+pct exec $CTID -- bash -c "[ ! -d /opt/ente ] && git clone https://github.com/$REPO.git /opt/ente || (cd /opt/ente && git pull)"
 msg_ok "Repository cloned successfully"
 
-# Start Ente server with Docker Compose
-msg_info "Starting Ente server with Docker Compose"
-$STD docker compose -f /opt/ente/server/docker-compose.yml up --build -d
+# Start Ente server with Docker Compose inside the container
+msg_info "Starting Ente server inside LXC"
+pct exec $CTID -- bash -c "cd /opt/ente/server && docker-compose up --build -d"
 msg_ok "Ente server started successfully"
 
-# Installing Yarn for frontend
-msg_info "Installing Yarn"
-$STD npm install -g yarn
+# Installing Yarn for frontend inside the container
+msg_info "Installing Yarn inside LXC"
+pct exec $CTID -- npm install -g yarn
 msg_ok "Yarn installed successfully"
 
-# Setting up Ente Web Client
-msg_info "Setting up Ente Web Client"
-(
-    cd /opt/ente/web || exit
-    $STD git submodule update --init --recursive
-    $STD yarn install
-    NEXT_PUBLIC_ENTE_ENDPOINT="http://localhost:8080" $STD yarn build
-)
+# Setting up Ente Web Client inside the container
+msg_info "Setting up Ente Web Client inside LXC"
+pct exec $CTID -- bash -c "cd /opt/ente/web && git submodule update --init --recursive && yarn install && NEXT_PUBLIC_ENTE_ENDPOINT=http://localhost:8080 yarn build"
 msg_ok "Web Client setup completed"
 
-# Save version
-echo "${RELEASE}" > /opt/ente_version.txt
+# Save version inside the container
+pct exec $CTID -- bash -c "echo '${RELEASE}' > /opt/ente_version.txt"
 
-# Creating Systemd Service
-msg_info "Creating Ente Service"
-cat <<EOF >/etc/systemd/system/ente.service
-[Unit]
-Description=Ente Storage Service
-After=network.target
+# Cleanup inside LXC
+msg_info "Cleaning up inside LXC"
+pct exec $CTID -- bash -c "apt-get -y autoremove && apt-get -y autoclean"
+msg_ok "Cleanup completed inside LXC"
 
-[Service]
-ExecStart=/usr/bin/docker compose -f /opt/ente/server/docker-compose.yml up --build -d
-Restart=always
-User=root
-WorkingDirectory=/opt/ente
+# Fetch the IP address of the container
+IP=$(pct exec $CTID -- ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
 
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl enable -q --now ente.service
-msg_ok "Ente Service created and started"
-
-# Setup Message of the Day and Customizations
-motd_ssh
-customize
-
-# Cleanup
-msg_info "Cleaning up"
-rm -f ${RELEASE}.zip
-$STD apt-get -y autoremove
-$STD apt-get -y autoclean
-msg_ok "Cleanup completed successfully"
+# Display the final message to the user
+msg_ok "Installation Completed Successfully!\n"
+echo -e "${CREATING}${GN}${APP} setup has been successfully initialized!${CL}"
+echo -e "${INFO}${YW} Access it using the following URL:${CL}"
+echo -e "${TAB}${GATEWAY}${BGN}http://${IP}:8080${CL}"
