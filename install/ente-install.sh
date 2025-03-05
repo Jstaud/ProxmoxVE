@@ -105,25 +105,26 @@ msg_ok "Web Client setup completed"
 echo "${RELEASE}" > /opt/ente_version.txt
 
 # Creating Systemd Service
-msg_info "Creating Ente Service"
-cat <<EOF >/etc/systemd/system/ente.service
+msg_info "Creating Ente Web Client Service"
+cat <<EOF >/etc/systemd/system/ente-web.service
 [Unit]
-Description=Ente Storage Service
-After=network.target
+Description=Ente Web Client Service
+After=network.target ente.service
 
 [Service]
-ExecStart=/usr/bin/docker-compose -f /opt/ente/server/docker-compose.yml up --build -d
+ExecStart=/usr/bin/bash -c "cd /opt/ente/web && yarn start"
 Restart=always
 User=root
-WorkingDirectory=/opt/ente
+WorkingDirectory=/opt/ente/web
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
-systemctl enable -q --now ente.service
-msg_ok "Ente Service created and started"
+systemctl enable -q --now ente-web.service
+msg_ok "Ente Web Client Service created and started"
+
 
 # Setup Message of the Day and Customizations
 motd_ssh
