@@ -22,11 +22,29 @@ $STD apt-get install -y \
   sudo \
   mc \
   git \
-  docker.io \
-  docker-compose \
   nodejs \
   npm
 msg_ok "Installed Dependencies"
+
+get_latest_release() {
+  curl -sL https://api.github.com/repos/$1/releases/latest | grep '"tag_name":' | cut -d'"' -f4
+}
+
+DOCKER_LATEST_VERSION=$(get_latest_release "moby/moby")
+DOCKER_COMPOSE_LATEST_VERSION=$(get_latest_release "docker/compose")
+
+msg_info "Installing Docker $DOCKER_LATEST_VERSION"
+DOCKER_CONFIG_PATH='/etc/docker/daemon.json'
+mkdir -p $(dirname $DOCKER_CONFIG_PATH)
+echo -e '{\n  "log-driver": "journald"\n}' >/etc/docker/daemon.json
+$STD sh <(curl -sSL https://get.docker.com)
+msg_ok "Installed Docker $DOCKER_LATEST_VERSION"
+
+msg_info "Installing Docker Compose $DOCKER_COMPOSE_LATEST_VERSION"
+$STD curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_LATEST_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+msg_ok "Installed Docker Compose $DOCKER_COMPOSE_LATEST_VERSION"
 
 # Ensure user is added to the docker group
 msg_info "Adding $(whoami) to docker group"
