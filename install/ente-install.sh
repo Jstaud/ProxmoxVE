@@ -15,15 +15,11 @@ network_check
 update_os
 
 # Installing Dependencies
-msg_info "Installing Dependencies \n THIS WILL TAKE A WHILE!!!"
-$STD apt-get update
-$STD apt-get install -y \
-  curl \
-  sudo \
-  mc \
-  git \
-  nodejs \
-  npm
+msg_info "Installing Dependencies (Parallel Downloading Enabled) \n THIS WILL TAKE A WHILE!!!"
+export DEBIAN_FRONTEND=noninteractive
+$STD apt-get update -q
+$STD apt-get install -y --no-install-recommends --no-upgrade \
+  curl sudo mc git nodejs npm
 msg_ok "Installed Dependencies"
 
 get_latest_release() {
