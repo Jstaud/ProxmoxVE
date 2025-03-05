@@ -6,7 +6,7 @@
 # Source: https://ente.cc/
 
 # Import functions from build.func
-source <(curl -s https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
+source <(curl -s https://raw.githubusercontent.com/Jstaud/ProxmoxVE/refs/heads/ente-docker-lxc-script/misc/build.func)
 
 # Default Values
 APP="Ente"
