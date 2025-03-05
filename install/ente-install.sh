@@ -117,7 +117,7 @@ Description=Ente Web Client Service
 After=network.target ente.service
 
 [Service]
-ExecStart=/usr/bin/bash -c "cd /opt/ente/web && yarn build:photos && yarn workspace photos next start"
+ExecStart=/usr/bin/bash -c "cd /opt/ente/web && git submodule update --init --recursive && yarn install && NEXT_PUBLIC_ENTE_ENDPOINT=http://localhost:8080 yarn dev"
 Restart=always
 User=root
 WorkingDirectory=/opt/ente/web
