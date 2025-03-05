@@ -21,13 +21,6 @@ if ! command -v whiptail &> /dev/null; then
     apt-get install -y whiptail
 fi
 
-# Prompt the user for PostgreSQL credentials
-DB_HOST=$(whiptail --inputbox "Enter PostgreSQL Database Host (e.g., db.example.com):" 8 78 --title "PostgreSQL Database Details" 3>&1 1>&2 2>&3)
-DB_PORT=$(whiptail --inputbox "Enter PostgreSQL Database Port (default 5432):" 8 78 5432 --title "PostgreSQL Database Details" 3>&1 1>&2 2>&3)
-DB_NAME=$(whiptail --inputbox "Enter PostgreSQL Database Name:" 8 78 --title "PostgreSQL Database Details" 3>&1 1>&2 2>&3)
-DB_USER=$(whiptail --inputbox "Enter PostgreSQL Database Username:" 8 78 --title "PostgreSQL Database Details" 3>&1 1>&2 2>&3)
-DB_PASS=$(whiptail --passwordbox "Enter PostgreSQL Database Password:" 8 78 --title "PostgreSQL Database Details" 3>&1 1>&2 2>&3)
-
 # Prompt the user for MinIO (S3) credentials
 S3_HOST=$(whiptail --inputbox "Enter MinIO Host (e.g., s3.example.com):" 8 78 --title "MinIO (S3) Storage Details" 3>&1 1>&2 2>&3)
 S3_PORT=$(whiptail --inputbox "Enter MinIO Port (default 3200):" 8 78 3200 --title "MinIO (S3) Storage Details" 3>&1 1>&2 2>&3)
@@ -89,11 +82,11 @@ msg_ok "Repository cloned and updated successfully"
 # 📝 Create the `credentials.yaml` file
 cat <<EOF > /opt/ente/server/credentials.yaml
 db:
-    host: $DB_HOST
-    port: $DB_PORT
-    name: $DB_NAME
-    user: $DB_USER
-    password: $DB_PASS
+    host: postgres
+    port: 5432
+    name: ente_db
+    user: pguser
+    password: pgpass
 
 s3:
     are_local_buckets: false
