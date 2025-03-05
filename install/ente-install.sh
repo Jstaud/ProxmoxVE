@@ -77,6 +77,13 @@ sed -i '/GIT_COMMIT:/d' compose.yaml
 # Add image reference for museum service
 sed -i 's|museum:|museum:\n    image: ghcr.io/ente-io/server|' compose.yaml
 
+# Add "restart: always" to all services that need it
+sed -i '/image: ghcr.io\/ente-io\/server/a \    restart: always' compose.yaml
+sed -i '/image: postgres:15/a \    restart: always' compose.yaml
+sed -i '/image: minio\/minio/a \    restart: always' compose.yaml
+sed -i '/image: minio\/mc/a \    restart: always' compose.yaml
+sed -i '/image: alpine\/socat/a \    restart: always' compose.yaml
+
 # Ensure museum.yaml exists (it should not be empty if required)
 touch museum.yaml
 
