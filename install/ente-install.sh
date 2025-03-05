@@ -68,11 +68,11 @@ msg_ok "Repository cloned and updated successfully"
 # Start Ente server with Docker Compose
 msg_info "Starting Ente server using prebuilt Docker image"
 cd /opt/ente/server || exit
-sed -i 's|build:|# build:|g' compose.yml
-sed -i 's|context: .|# context: .|g' compose.yml
-sed -i 's|args:|# args:|g' compose.yml
-sed -i 's|GIT_COMMIT: development-cluster|# GIT_COMMIT: development-cluster|g' compose.yml
-sed -i 's|# image: ghcr.io/ente-io/server|image: ghcr.io/ente-io/server|g' compose.yml
+sed -i 's|build:|# build:|g' compose.yaml
+sed -i 's|context: .|# context: .|g' compose.yaml
+sed -i 's|args:|# args:|g' compose.yaml
+sed -i 's|GIT_COMMIT: development-cluster|# GIT_COMMIT: development-cluster|g' compose.yaml
+sed -i 's|# image: ghcr.io/ente-io/server|image: ghcr.io/ente-io/server|g' compose.yaml
 touch museum.yaml
 $STD docker-compose up -d
 msg_ok "Ente server started using prebuilt image"
