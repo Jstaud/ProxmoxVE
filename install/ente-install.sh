@@ -81,8 +81,6 @@ sed -i 's|museum:|museum:\n    image: ghcr.io/ente-io/server|' compose.yaml
 sed -i '/image: ghcr.io\/ente-io\/server/a \    restart: always' compose.yaml
 sed -i '/image: postgres:15/a \    restart: always' compose.yaml
 sed -i '/image: minio\/minio/a \    restart: always' compose.yaml
-sed -i '/image: minio\/mc/a \    restart: always' compose.yaml
-sed -i '/image: alpine\/socat/a \    restart: always' compose.yaml
 
 # Ensure museum.yaml exists (it should not be empty if required)
 touch museum.yaml
@@ -119,7 +117,7 @@ Description=Ente Web Client Service
 After=network.target ente.service
 
 [Service]
-ExecStart=/usr/bin/bash -c "cd /opt/ente/web && yarn start"
+ExecStart=/usr/bin/bash -c "cd /opt/ente/web && yarn build:photos && yarn workspace photos next start"
 Restart=always
 User=root
 WorkingDirectory=/opt/ente/web
