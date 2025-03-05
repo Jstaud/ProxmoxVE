@@ -14,6 +14,27 @@ setting_up_container
 network_check
 update_os
 
+# Ensure whiptail is installed
+if ! command -v whiptail &> /dev/null; then
+    echo "whiptail could not be found, installing..."
+    apt-get update -q
+    apt-get install -y whiptail
+fi
+
+# Prompt the user for PostgreSQL credentials
+DB_HOST=$(whiptail --inputbox "Enter PostgreSQL Database Host (e.g., db.example.com):" 8 78 --title "PostgreSQL Database Details" 3>&1 1>&2 2>&3)
+DB_PORT=$(whiptail --inputbox "Enter PostgreSQL Database Port (default 5432):" 8 78 5432 --title "PostgreSQL Database Details" 3>&1 1>&2 2>&3)
+DB_NAME=$(whiptail --inputbox "Enter PostgreSQL Database Name:" 8 78 --title "PostgreSQL Database Details" 3>&1 1>&2 2>&3)
+DB_USER=$(whiptail --inputbox "Enter PostgreSQL Database Username:" 8 78 --title "PostgreSQL Database Details" 3>&1 1>&2 2>&3)
+DB_PASS=$(whiptail --passwordbox "Enter PostgreSQL Database Password:" 8 78 --title "PostgreSQL Database Details" 3>&1 1>&2 2>&3)
+
+# Prompt the user for MinIO (S3) credentials
+S3_HOST=$(whiptail --inputbox "Enter MinIO Host (e.g., s3.example.com):" 8 78 --title "MinIO (S3) Storage Details" 3>&1 1>&2 2>&3)
+S3_PORT=$(whiptail --inputbox "Enter MinIO Port (default 3200):" 8 78 3200 --title "MinIO (S3) Storage Details" 3>&1 1>&2 2>&3)
+S3_ACCESS_KEY=$(whiptail --inputbox "Enter MinIO Access Key:" 8 78 --title "MinIO (S3) Storage Details" 3>&1 1>&2 2>&3)
+S3_SECRET_KEY=$(whiptail --passwordbox "Enter MinIO Secret Key:" 8 78 --title "MinIO (S3) Storage Details" 3>&1 1>&2 2>&3)
+S3_BUCKET=$(whiptail --inputbox "Enter MinIO Bucket Name:" 8 78 --title "MinIO (S3) Storage Details" 3>&1 1>&2 2>&3)
+
 # Installing Dependencies
 msg_info "Installing Dependencies (Parallel Downloading Enabled) NOTE: This will take a while, grab some coffee"
 export DEBIAN_FRONTEND=noninteractive
@@ -64,26 +85,6 @@ else
     $STD git reset --hard origin/main
 fi
 msg_ok "Repository cloned and updated successfully"
-
-# ⚡ Prompt the user for PostgreSQL credentials
-echo -e "\n🔹 Enter PostgreSQL Database Details:"
-read -p "📌 Database Host (e.g., db.example.com): " DB_HOST
-read -p "📌 Database Port (default 5432): " DB_PORT
-DB_PORT=${DB_PORT:-5432}  # Use default 5432 if empty
-read -p "📌 Database Name: " DB_NAME
-read -p "📌 Database Username: " DB_USER
-read -s -p "🔑 Database Password: " DB_PASS
-echo ""  # Newline after password input
-
-# ⚡ Prompt the user for MinIO (S3) credentials
-echo -e "\n🔹 Enter MinIO (S3) Storage Details:"
-read -p "📌 MinIO Host (e.g., s3.example.com): " S3_HOST
-read -p "📌 MinIO Port (default 3200): " S3_PORT
-S3_PORT=${S3_PORT:-3200}  # Default port
-read -p "📌 MinIO Access Key: " S3_ACCESS_KEY
-read -s -p "🔑 MinIO Secret Key: " S3_SECRET_KEY
-echo ""  # Newline after password input
-read -p "📌 MinIO Bucket Name: " S3_BUCKET
 
 # 📝 Create the `credentials.yaml` file
 cat <<EOF > /opt/ente/server/credentials.yaml
