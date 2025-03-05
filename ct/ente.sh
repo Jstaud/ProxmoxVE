@@ -17,7 +17,6 @@ var_disk="10"
 var_os="debian"
 var_version="12"
 var_unprivileged="1"
-var_verbose="1"
 
 # Generate header for the application
 header_info "$APP"
