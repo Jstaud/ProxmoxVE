@@ -15,7 +15,7 @@ network_check
 update_os
 
 # Installing Dependencies
-msg_info "Installing Dependencies"
+msg_info "Installing Dependencies \n THIS WILL TAKE A WHILE!!!"
 $STD apt-get update
 $STD apt-get install -y \
   curl \
