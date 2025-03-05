@@ -65,6 +65,47 @@ else
 fi
 msg_ok "Repository cloned and updated successfully"
 
+# ⚡ Prompt the user for PostgreSQL credentials
+echo -e "\n🔹 Enter PostgreSQL Database Details:"
+read -p "📌 Database Host (e.g., db.example.com): " DB_HOST
+read -p "📌 Database Port (default 5432): " DB_PORT
+DB_PORT=${DB_PORT:-5432}  # Use default 5432 if empty
+read -p "📌 Database Name: " DB_NAME
+read -p "📌 Database Username: " DB_USER
+read -s -p "🔑 Database Password: " DB_PASS
+echo ""  # Newline after password input
+
+# ⚡ Prompt the user for MinIO (S3) credentials
+echo -e "\n🔹 Enter MinIO (S3) Storage Details:"
+read -p "📌 MinIO Host (e.g., s3.example.com): " S3_HOST
+read -p "📌 MinIO Port (default 3200): " S3_PORT
+S3_PORT=${S3_PORT:-3200}  # Default port
+read -p "📌 MinIO Access Key: " S3_ACCESS_KEY
+read -s -p "🔑 MinIO Secret Key: " S3_SECRET_KEY
+echo ""  # Newline after password input
+read -p "📌 MinIO Bucket Name: " S3_BUCKET
+
+# 📝 Create the `credentials.yaml` file
+cat <<EOF > /opt/ente/server/credentials.yaml
+db:
+    host: $DB_HOST
+    port: $DB_PORT
+    name: $DB_NAME
+    user: $DB_USER
+    password: $DB_PASS
+
+s3:
+    are_local_buckets: false
+    default:
+        key: $S3_ACCESS_KEY
+        secret: $S3_SECRET_KEY
+        endpoint: http://$S3_HOST:$S3_PORT
+        region: us-east-1
+        bucket: $S3_BUCKET
+EOF
+
+msg_ok "✅ Credentials saved to /opt/ente/server/credentials.yaml"
+
 # Start Ente server with Docker Compose
 msg_info "Starting Ente server using prebuilt Docker image"
 cd /opt/ente/server || exit
