@@ -15,7 +15,7 @@ network_check
 update_os
 
 # Installing Dependencies
-msg_info "Installing Dependencies (Parallel Downloading Enabled) \n THIS WILL TAKE A WHILE!!!"
+msg_info "Installing Dependencies (Parallel Downloading Enabled) NOTE: This will take a while, grab some coffee"
 export DEBIAN_FRONTEND=noninteractive
 $STD apt-get update -q
 $STD apt-get install -y --no-install-recommends --no-upgrade \
@@ -66,7 +66,7 @@ fi
 msg_ok "Repository cloned and updated successfully"
 
 # Start Ente server with Docker Compose
-msg_info "Starting Ente server with Docker Compose"
+msg_info "Building Docker Image and Starting Ente server with Docker Compose"
 cd /opt/ente/server || exit
 $STD docker-compose up --build -d
 msg_ok "Ente server started successfully"
